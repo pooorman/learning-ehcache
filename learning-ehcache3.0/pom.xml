@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>hahn.learning.ehcache</groupId>
-    <artifactId>learing-ehcache3.0</artifactId>
+    <artifactId>learning-ehcache3.0</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>learing-ehcache3.0</name>
     <url>http://maven.apache.org</url>

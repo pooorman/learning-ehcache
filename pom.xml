@@ -9,7 +9,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>learing-ehcache3.0</module>
+        <module>learning-ehcache3.0</module>
+        <module>learning-ehcache2.10</module>
     </modules>
 
 </project>
