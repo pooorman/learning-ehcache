@@ -11,6 +11,7 @@
     <modules>
         <module>learning-ehcache3.0</module>
         <module>learning-ehcache2.10</module>
+        <module>learning-jni</module>
     </modules>
 
 </project>
