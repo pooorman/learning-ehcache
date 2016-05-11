@@ -1,7 +1,9 @@
 package hahn.learning.jni;
 
 import com.google.common.cache.*;
+import sun.misc.Cleaner;
 
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -23,22 +25,23 @@ public class TestBuffer {
                 .build(CacheLoader.asyncReloading(cacheLoader, threadPool));
 
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 1000000; i++) {
             long start = System.currentTimeMillis();
-            for (int idx = 0; idx < 4000; idx++) {
+            for (int idx = 0; idx < 20000; idx++) {
                 String key = String.format("KEY_%05d", idx);
                 byte[] source = new byte[MB];
                 Arrays.fill(source, (byte) 48);
 
                 ByteBuffer bb = ByteBuffer.allocateDirect(MB);
                 bb = bb.put(source, 0, source.length);
+                bb.rewind();
                 cache.put(key, bb);
 
                 // Thread.sleep(100);
             }
             long end = System.currentTimeMillis();
             System.out.println("Put: " + (end - start));
-            for (int idx = 0; idx < 4000; idx++) {
+            for (int idx = 0; idx < 20000; idx++) {
                 String key = String.format("KEY_%05d", idx);
                 ByteBuffer value = cache.get(key);
 
@@ -65,31 +68,29 @@ public class TestBuffer {
 
             ByteBuffer bb = ByteBuffer.allocateDirect(MB);
             bb = bb.put(source, 0, source.length);
+            bb.rewind();
             return bb;
         }
     };
     private static final Weigher<String, ByteBuffer> weigher = new Weigher<String, ByteBuffer>() {
         @Override
         public int weigh(String key, ByteBuffer value) {
-            System.out.println(value.remaining());
-            System.out.println(value.array().length);
             return value.remaining();
         }
     };
     private static final RemovalListener<String, ByteBuffer> removalListener = new RemovalListener<String, ByteBuffer>() {
         @Override
         public void onRemoval(RemovalNotification<String, ByteBuffer> notification) {
-            /**
-             try {
-             // System.out.println("Remove: " + notification.getKey());
-             ByteBuffer bb = notification.getValue();
-             Field cleanerField = bb.getClass().getDeclaredField("cleaner");
-             cleanerField.setAccessible(true);
-             Cleaner cleaner = (Cleaner) cleanerField.get(bb);
-             cleaner.clean();
-             } catch (Exception ex) {
-             ex.printStackTrace();
-             }**/
+            try {
+                // System.out.println("Remove: " + notification.getKey());
+                ByteBuffer bb = notification.getValue();
+                Field cleanerField = bb.getClass().getDeclaredField("cleaner");
+                cleanerField.setAccessible(true);
+                Cleaner cleaner = (Cleaner) cleanerField.get(bb);
+                cleaner.clean();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     };
 

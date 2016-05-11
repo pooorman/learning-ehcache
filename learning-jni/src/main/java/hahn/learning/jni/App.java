@@ -8,7 +8,8 @@ import java.util.Arrays;
  */
 public class App {
 
-    private static final int MB = 1024 * 1024;
+    // private static final int MB = 1024 * 1024;
+    private static final int MB = 10;
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
         // Unsafe f = Unsafe.getUnsafe();
@@ -24,7 +25,25 @@ public class App {
         Arrays.fill(source, (byte) 49);
 
         ByteBuffer bb = ByteBuffer.allocateDirect(MB);
+        System.out.println(bb.remaining());
         bb.put(source, 0, source.length);
+        System.out.println(bb.remaining());
+        bb.rewind();
+        bb.mark();
+        System.out.println(bb.remaining());
+
+        byte[] target = new byte[MB];
+        bb.get(target, 0, bb.remaining());
+        System.out.println(bb.remaining());
+
+        bb.reset();
+        System.out.println(bb.remaining());
+
+        byte[] target2 = new byte[MB];
+        bb.get(target2, 0, bb.remaining());
+        System.out.println(bb.remaining());
+
+        bb.reset();
         System.out.println(bb.remaining());
     }
 
